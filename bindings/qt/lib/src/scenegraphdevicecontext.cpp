@@ -130,6 +130,11 @@ vrv::Point SceneGraphDeviceContext::GetLogicalOrigin()
     return m_logicalOrigin;
 }
 
+void SceneGraphDeviceContext::DrawSimpleBezierPath(vrv::Point bezier[4])
+{
+    qWarning() << "Warning:" << __FUNCTION__ << "not supported";
+}
+
 void SceneGraphDeviceContext::DrawComplexBezierPath(vrv::Point bezier1[4], vrv::Point bezier2[4])
 {
     // Note: No support for vertex antialiasing. Use a top-level QQuickView with multisample antialiasing.
@@ -318,9 +323,18 @@ void SceneGraphDeviceContext::DrawRotatedText(const std::string &, int, int, dou
     // This function is also not implemented for SvgDeviceContext
 }
 
-void SceneGraphDeviceContext::DrawRoundedRectangle(int, int, int, int, double)
+void SceneGraphDeviceContext::DrawRoundedRectangle(int x, int y, int width, int height, int radius)
 {
-    qWarning() << "Warning:" << __FUNCTION__ << "not supported";
+    vrv::Pen currentPen = m_penStack.top();
+
+    QSGSimpleRectNode *node = new QSGSimpleRectNode;
+    node->setColor(static_cast<QRgb>(currentPen.GetColour()));
+    qreal rectX = static_cast<qreal>(translateX(x));
+    qreal rectY = static_cast<qreal>(translateY(y));
+    qreal rectWidth = static_cast<qreal>(translate(width));
+    qreal rectHeight = static_cast<qreal>(translate(height));
+    node->setRect(rectX, rectY, rectWidth, rectHeight);
+    AddGeometryNode(node);
 }
 
 void SceneGraphDeviceContext::StartText(int x, int y, vrv::data_HORIZONTALALIGNMENT alignment)
@@ -402,6 +416,11 @@ void SceneGraphDeviceContext::MoveTextTo(int x, int y, vrv::data_HORIZONTALALIGN
     }
 }
 
+void SceneGraphDeviceContext::MoveTextVerticallyTo(int y)
+{
+    qWarning() << "Warning:" << __FUNCTION__ << "not supported";
+}
+
 void SceneGraphDeviceContext::SetTextPositionAndAlignment(int x, int y, vrv::data_HORIZONTALALIGNMENT alignment)
 {
     m_currentTextQuickItem->setX(static_cast<double>(translateX(x)));
@@ -454,7 +473,7 @@ void SceneGraphDeviceContext::DrawBackgroundImage(int, int)
     // This function is also not implemented for SvgDeviceContext
 }
 
-void SceneGraphDeviceContext::StartGraphic(vrv::Object *object, std::string, std::string gId)
+void SceneGraphDeviceContext::StartGraphic(vrv::Object *object, std::string, std::string gId, bool primary, bool preprend)
 {
     m_activeGraphicObjectsStack.push(ActiveGraphic(QString::fromStdString(gId), object));
 }

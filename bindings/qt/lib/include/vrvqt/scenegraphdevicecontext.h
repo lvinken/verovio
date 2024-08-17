@@ -85,6 +85,7 @@ public:
      * @name Drawing methods
      */
     ///@{
+    void DrawSimpleBezierPath(vrv::Point bezier[4]) override;
     void DrawComplexBezierPath(vrv::Point bezier1[4], vrv::Point bezier2[4]) override;
     void DrawCircle(int x, int y, int radius) override;
     void DrawEllipse(int x, int y, int width, int height) override;
@@ -94,7 +95,7 @@ public:
         int n, vrv::Point points[], int xoffset, int yoffset, int fill_style = vrv::AxODDEVEN_RULE) override;
     void DrawRectangle(int x, int y, int width, int height) override;
     void DrawRotatedText(const std::string &text, int x, int y, double angle) override;
-    void DrawRoundedRectangle(int x, int y, int width, int height, double radius) override;
+    void DrawRoundedRectangle(int x, int y, int width, int height, int radius) override;
     void DrawText(
         const std::string &text, const std::wstring wtext = L"", int x = VRV_UNSET, int y = VRV_UNSET) override;
     void DrawMusicText(const std::wstring &text, int x, int y, bool setSmuflGlyph) override;
@@ -110,13 +111,14 @@ public:
     void StartText(int x, int y, vrv::data_HORIZONTALALIGNMENT alignment = vrv::HORIZONTALALIGNMENT_left) override;
     void EndText() override;
     void MoveTextTo(int x, int y, vrv::data_HORIZONTALALIGNMENT alignment) override;
+    void MoveTextVerticallyTo(int y) override;
     ///@}
 
     /**
      * @name Method for starting, restarting and ending a graphic
      */
     ///@{
-    void StartGraphic(vrv::Object *object, std::string gClass, std::string gId) override;
+    void StartGraphic(vrv::Object *object, std::string gClass, std::string gId, bool primary = true, bool preprend = false) override;
     void EndGraphic(vrv::Object *object, vrv::View *view) override;
     void ResumeGraphic(vrv::Object *object, std::string gId) override;
     void EndResumedGraphic(vrv::Object *object, vrv::View *view) override;
