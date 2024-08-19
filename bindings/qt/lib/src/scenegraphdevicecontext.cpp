@@ -154,7 +154,7 @@ void SceneGraphDeviceContext::DrawComplexBezierPath(vrv::Point bezier1[4], vrv::
     node->setFlag(QSGNode::OwnsGeometry);
 
     QSGFlatColorMaterial *material = new QSGFlatColorMaterial;
-    material->setColor(static_cast<QRgb>(currentPen.GetColour()));
+    material->setColor(QColor::fromRgb(0,0,0));
     node->setMaterial(material);
     node->setFlag(QSGNode::OwnsMaterial);
 
@@ -208,7 +208,7 @@ void SceneGraphDeviceContext::DrawCircle(int x, int y, int radius)
     node->setFlag(QSGNode::OwnsGeometry);
 
     QSGFlatColorMaterial *material = new QSGFlatColorMaterial;
-    material->setColor(static_cast<QRgb>(currentPen.GetColour()));
+    material->setColor(QColor::fromRgb(0,0,0));
     node->setMaterial(material);
     node->setFlag(QSGNode::OwnsMaterial);
 
@@ -248,7 +248,7 @@ void SceneGraphDeviceContext::DrawLine(int x1, int y1, int x2, int y2)
     geometry->vertexDataAsPoint2D()[1].set(translateX(x2), translateY(y2));
 
     QSGFlatColorMaterial *material = new QSGFlatColorMaterial;
-    material->setColor(static_cast<QRgb>(currentPen.GetColour()));
+    material->setColor(QColor::fromRgb(0,0,0));
 
     QSGGeometryNode *node = new QSGGeometryNode;
     node->setGeometry(geometry);
@@ -277,7 +277,7 @@ void SceneGraphDeviceContext::DrawPolygon(int n, vrv::Point points[], int xoffse
     geometry->setDrawingMode(QSGGeometry::DrawTriangleStrip);
 
     QSGFlatColorMaterial *material = new QSGFlatColorMaterial;
-    material->setColor(static_cast<QRgb>(currentPen.GetColour()));
+    material->setColor(QColor::fromRgb(0,0,0));
 
     // Reorder points so that they can be drawn with DrawTriangleStrip.
     int counter1 = 0;
@@ -309,7 +309,7 @@ void SceneGraphDeviceContext::DrawRectangle(int x, int y, int width, int height)
     vrv::Pen currentPen = m_penStack.top();
 
     QSGSimpleRectNode *node = new QSGSimpleRectNode;
-    node->setColor(static_cast<QRgb>(currentPen.GetColour()));
+    node->setColor(QColor::fromRgb(0,0,0));
     qreal rectX = static_cast<qreal>(translateX(x));
     qreal rectY = static_cast<qreal>(translateY(y));
     qreal rectWidth = static_cast<qreal>(translate(width));
@@ -328,7 +328,7 @@ void SceneGraphDeviceContext::DrawRoundedRectangle(int x, int y, int width, int 
     vrv::Pen currentPen = m_penStack.top();
 
     QSGSimpleRectNode *node = new QSGSimpleRectNode;
-    node->setColor(static_cast<QRgb>(currentPen.GetColour()));
+    node->setColor(QColor::fromRgb(0,0,0));
     qreal rectX = static_cast<qreal>(translateX(x));
     qreal rectY = static_cast<qreal>(translateY(y));
     qreal rectWidth = static_cast<qreal>(translate(width));
