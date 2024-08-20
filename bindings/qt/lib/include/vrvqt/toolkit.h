@@ -197,6 +197,12 @@ private:
      */
     bool prepareLayout();
 
+    /**
+     * @name Getter and setter for single option
+     */
+    std::string GetOption(const std::string &option, bool defaultValue = false) const;
+    bool SetOption(const std::string &option, const std::string &value);
+
 private:
     // Stores the dimensions to which the score should be rendered. This takes into account the current scale and thus
     // differs to the Verovio pageWidth and pageHeight.
