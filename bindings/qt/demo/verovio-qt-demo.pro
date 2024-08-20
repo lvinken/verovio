@@ -28,7 +28,8 @@ GIT_BASE_PATH = $$shell_path($$_PRO_FILE_PWD_)/../../..
     INCLUDEPATH += ../../../include/pugi
     INCLUDEPATH += ../../../include/utf8
     INCLUDEPATH += ../../../include/json
-    INCLUDEPATH += ../../../libmei
+    INCLUDEPATH += ../../../libmei/addons
+    INCLUDEPATH += ../../../libmei/dist
     INCLUDEPATH += ../lib/include
 }
 
