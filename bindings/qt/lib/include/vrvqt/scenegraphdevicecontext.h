@@ -67,11 +67,11 @@ public:
      * @name Setters
      */
     ///@{
-    void SetBackground(int colour, int style) override;
+    void SetBackground(int color, int style) override;
     void SetBackgroundImage(void *image, double opacity) override;
     void SetBackgroundMode(int mode) override;
-    void SetTextForeground(int colour) override;
-    void SetTextBackground(int colour) override;
+    void SetTextForeground(int color) override;
+    void SetTextBackground(int color) override;
     void SetLogicalOrigin(int x, int y) override;
     ///@}
 
@@ -93,16 +93,17 @@ public:
     void DrawEllipse(int x, int y, int width, int height) override;
     void DrawEllipticArc(int x, int y, int width, int height, double start, double end) override;
     void DrawLine(int x1, int y1, int x2, int y2) override;
-    void DrawPolygon(
-        int n, vrv::Point points[], int xoffset, int yoffset, int fill_style = vrv::AxODDEVEN_RULE) override;
+    void DrawPolyline(int n, vrv::Point points[], int xOffset = 0, int yOffset = 0) override;
+    void DrawPolygon(int n, vrv::Point points[], int xoffset, int yoffset) override;
     void DrawRectangle(int x, int y, int width, int height) override;
     void DrawRotatedText(const std::string &text, int x, int y, double angle) override;
     void DrawRoundedRectangle(int x, int y, int width, int height, int radius) override;
-    void DrawText(const std::string &text, const std::wstring wtext = L"", int x = VRV_UNSET, int y = VRV_UNSET,
+    void DrawText(const std::string &text, const std::u32string &wtext = U"", int x = VRV_UNSET, int y = VRV_UNSET,
         int width = VRV_UNSET, int height = VRV_UNSET) override;
-    void DrawMusicText(const std::wstring &text, int x, int y, bool setSmuflGlyph) override;
+    void DrawMusicText(const std::u32string &text, int x, int y, bool setSmuflGlyph = false) override;
     void DrawSpline(int n, vrv::Point points[]) override;
-    void DrawSvgShape(int x, int y, int width, int height, pugi::xml_node svg) override;
+    void DrawGraphicUri(int x, int y, int width, int height, const std::string &uri) override;
+    void DrawSvgShape(int x, int y, int width, int height, double scale, pugi::xml_node svg) override;
     void DrawBackgroundImage(int x = 0, int y = 0) override;
     ///@}
 
@@ -120,7 +121,8 @@ public:
      * @name Method for starting, restarting and ending a graphic
      */
     ///@{
-    void StartGraphic(vrv::Object *object, std::string gClass, std::string gId, bool primary, bool prepend) override;
+    void StartGraphic(vrv::Object *object, std::string gClass, std::string gId, vrv::GraphicID graphicID = vrv::PRIMARY,
+        bool prepend = false) override;
     void EndGraphic(vrv::Object *object, vrv::View *view) override;
     void ResumeGraphic(vrv::Object *object, std::string gId) override;
     void EndResumedGraphic(vrv::Object *object, vrv::View *view) override;

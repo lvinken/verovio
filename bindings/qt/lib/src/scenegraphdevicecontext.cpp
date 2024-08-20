@@ -126,9 +126,9 @@ void SceneGraphDeviceContext::SetBackgroundMode(int)
     // This function is also not implemented for SvgDeviceContext
 }
 
-void SceneGraphDeviceContext::SetTextForeground(int colour)
+void SceneGraphDeviceContext::SetTextForeground(int color)
 {
-    m_brushStack.top().SetColour(colour); // we use the brush colour for text
+    m_brushStack.top().SetColor(color); // we use the brush color for text
 }
 
 void SceneGraphDeviceContext::SetTextBackground(int)
@@ -158,11 +158,11 @@ void SceneGraphDeviceContext::DrawCubicBezierPath(vrv::Point bezier[])
 
 QRgb GetRgbFromPen(const vrv::Pen &pen)
 {
-    if (pen.GetColour() == AxNONE) {
+    if (pen.GetColor() == AxNONE) {
         return static_cast<QRgb>(AxBLACK);
     }
     else {
-        return static_cast<QRgb>(pen.GetColour());
+        return static_cast<QRgb>(pen.GetColor());
     }
 }
 
@@ -313,7 +313,12 @@ void SceneGraphDeviceContext::DrawLine(int x1, int y1, int x2, int y2)
     AddGeometryNode(node);
 }
 
-void SceneGraphDeviceContext::DrawPolygon(int n, vrv::Point points[], int xoffset, int yoffset, int)
+void SceneGraphDeviceContext::DrawPolyline(int, vrv::Point[], int, int)
+{
+    qWarning() << "Warning:" << __FUNCTION__ << "not supported";
+}
+
+void SceneGraphDeviceContext::DrawPolygon(int n, vrv::Point points[], int xoffset, int yoffset)
 {
     // Note: No support for vertex antialiasing. Use a top-level QQuickView with multisample antialiasing.
     // TODO: Add vertex antialiasing, refer to
@@ -358,6 +363,11 @@ void SceneGraphDeviceContext::DrawPolygon(int n, vrv::Point points[], int xoffse
     AddGeometryNode(node);
 }
 
+void SceneGraphDeviceContext::DrawGraphicUri(int, int, int, int, const std::string &)
+{
+    qWarning() << "Warning:" << __FUNCTION__ << "not supported";
+}
+
 void SceneGraphDeviceContext::DrawRectangle(int x, int y, int width, int height)
 {
     vrv::Pen currentPen = m_penStack.top();
@@ -391,8 +401,7 @@ void SceneGraphDeviceContext::StartText(int x, int y, vrv::data_HORIZONTALALIGNM
     SetTextPositionAndAlignment(x, y, alignment);
 }
 
-void SceneGraphDeviceContext::DrawText(
-    const std::string &text, const std::wstring wtext, int x, int y, int width, int height)
+void SceneGraphDeviceContext::DrawText(const std::string &text, const std::u32string &wtext, int x, int y, int width, int height)
 {
     Q_ASSERT(m_currentTextQuickItem != nullptr);
 
@@ -487,7 +496,7 @@ void SceneGraphDeviceContext::SetTextPositionAndAlignment(int x, int y, vrv::dat
     }
 }
 
-void SceneGraphDeviceContext::DrawMusicText(const std::wstring &text, int x, int y, bool)
+void SceneGraphDeviceContext::DrawMusicText(const std::u32string &text, int x, int y, bool)
 {
     Q_ASSERT(m_fontStack.top());
 
@@ -501,7 +510,7 @@ void SceneGraphDeviceContext::DrawMusicText(const std::wstring &text, int x, int
     // Memory management is handled by m_quickItem (set in AddQuickItem)
     auto musicTextQuickItem = new TextQuickItem();
 
-    musicTextQuickItem->appendText(QString::fromStdWString(text), font);
+    musicTextQuickItem->appendText(QString::fromStdU32String(text), font);
 
     musicTextQuickItem->setX(static_cast<double>(translateX(x)));
     musicTextQuickItem->setY(static_cast<double>(translateY(y)));
@@ -515,7 +524,7 @@ void SceneGraphDeviceContext::DrawSpline(int, vrv::Point[])
     // This function is also not implemented for SvgDeviceContext
 }
 
-void SceneGraphDeviceContext::DrawSvgShape(int x, int y, int width, int height, pugi::xml_node svg)
+void SceneGraphDeviceContext::DrawSvgShape(int x, int y, int width, int height, double scale, pugi::xml_node svg)
 {
     // This function is not yet supported
 }
@@ -525,8 +534,7 @@ void SceneGraphDeviceContext::DrawBackgroundImage(int, int)
     // This function is also not implemented for SvgDeviceContext
 }
 
-void SceneGraphDeviceContext::StartGraphic(
-    vrv::Object *object, std::string gClass, std::string gId, bool primary, bool prepend)
+void SceneGraphDeviceContext::StartGraphic(vrv::Object *object, std::string gClass, std::string gId, vrv::GraphicID graphicID, bool prepend)
 {
     if (prepend) {
         qWarning() << "Warning:" << __FUNCTION__ << " with parameter prepend = true not supported";
