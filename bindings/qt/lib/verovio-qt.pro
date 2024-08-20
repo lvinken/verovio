@@ -37,7 +37,8 @@ INCLUDEPATH += include
     INCLUDEPATH += ../../../include/pugi
     INCLUDEPATH += ../../../include/utf8
     INCLUDEPATH += ../../../include/json
-    INCLUDEPATH += ../../../libmei
+    INCLUDEPATH += ../../../libmei/addons
+    INCLUDEPATH += ../../../libmei/dist
 }
 
 android {
