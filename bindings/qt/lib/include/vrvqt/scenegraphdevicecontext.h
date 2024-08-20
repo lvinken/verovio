@@ -39,7 +39,7 @@ public:
     ///@{
     SceneGraphDeviceContext(QQuickItem *quickItem, QSGNode *node);
     ~SceneGraphDeviceContext() override = default;
-    vrv::ClassId GetClassId() const override { return vrv::CUSTOM_DEVICE_CONTEXT; }
+    // TODO check vrv::ClassId GetClassId() const override { return vrv::CUSTOM_DEVICE_CONTEXT; }
     void Clear();
     ///@}
 
