@@ -18,8 +18,8 @@
 namespace vrvQt {
 Toolkit::Toolkit()
     : m_verovioToolkit(false)
-    , m_displayWidth(std::stoi(m_verovioToolkit.GetOption("pageWidth")))
-    , m_displayHeight(std::stoi(m_verovioToolkit.GetOption("pageHeight")))
+    , m_displayWidth(std::stoi(GetOption("pageWidth")))
+    , m_displayHeight(std::stoi(GetOption("pageHeight")))
 {
     connect(this, SIGNAL(documentLayoutInvalidated()), this, SLOT(documentRelayout()), Qt::QueuedConnection);
     connect(this, SIGNAL(fileNameInvalidated()), this, SLOT(readFile()), Qt::QueuedConnection);
@@ -153,7 +153,7 @@ void Toolkit::setScale(int scale)
 void Toolkit::setAdjustPageHeight(bool adjustPageHeight)
 {
     if (getAdjustPageHeight() != adjustPageHeight) {
-        m_verovioToolkit.SetOption("adjustPageHeight", adjustPageHeight ? "true" : "false");
+        SetOption("adjustPageHeight", adjustPageHeight ? "true" : "false");
         requestDocumentRelayout();
     }
 }
@@ -161,7 +161,7 @@ void Toolkit::setAdjustPageHeight(bool adjustPageHeight)
 void Toolkit::setBreaks(QString breaks)
 {
     if (getBreaks() != breaks) {
-        m_verovioToolkit.SetOption("breaks", breaks.toStdString());
+        SetOption("breaks", breaks.toStdString());
         // "breaks" is used in LoadData
         requestReloadData();
     }
@@ -170,7 +170,7 @@ void Toolkit::setBreaks(QString breaks)
 void Toolkit::setHeader(QString header)
 {
     if (getHeader() != header) {
-        m_verovioToolkit.SetOption("header", header.toStdString());
+        SetOption("header", header.toStdString());
         // "header" is used in LoadData
         requestReloadData();
     }
@@ -179,7 +179,7 @@ void Toolkit::setHeader(QString header)
 void Toolkit::setFooter(QString footer)
 {
     if (getFooter() != footer) {
-        m_verovioToolkit.SetOption("footer", footer.toStdString());
+        SetOption("footer", footer.toStdString());
         // "footer" is used in LoadData
         requestReloadData();
     }
@@ -188,7 +188,7 @@ void Toolkit::setFooter(QString footer)
 void Toolkit::setTranspose(QString transpose)
 {
     if (getTranspose() != transpose) {
-        m_verovioToolkit.SetOption("transpose", transpose.toStdString());
+        SetOption("transpose", transpose.toStdString());
         // "transpose" is used in LoadData
         requestReloadData();
     }
@@ -267,7 +267,7 @@ void Toolkit::setResourcesDataPath(QString resourcesDataPath)
 void Toolkit::setSpacingStaff(int spacingStaff)
 {
     if (getSpacingStaff() != spacingStaff) {
-        m_verovioToolkit.SetOption("spacingStaff", std::to_string(spacingStaff));
+        SetOption("spacingStaff", std::to_string(spacingStaff));
         requestDocumentRelayout();
     }
 }
@@ -275,14 +275,14 @@ void Toolkit::setSpacingStaff(int spacingStaff)
 void Toolkit::setSpacingSystem(int spacingSystem)
 {
     if (getSpacingSystem() != spacingSystem) {
-        m_verovioToolkit.SetOption("spacingSystem", std::to_string(spacingSystem));
+        SetOption("spacingSystem", std::to_string(spacingSystem));
         requestDocumentRelayout();
     }
 }
 
 bool Toolkit::getAdjustPageHeight() const
 {
-    return m_verovioToolkit.GetOption("adjustPageHeight") == "true";
+    return GetOption("adjustPageHeight") == "true";
 }
 
 int Toolkit::getScale()
@@ -292,32 +292,32 @@ int Toolkit::getScale()
 
 int Toolkit::getSpacingSystem() const
 {
-    return std::stoi(m_verovioToolkit.GetOption("spacingSystem"));
+    return std::stoi(GetOption("spacingSystem"));
 }
 
 int Toolkit::getSpacingStaff() const
 {
-    return std::stoi(m_verovioToolkit.GetOption("spacingStaff"));
+    return std::stoi(GetOption("spacingStaff"));
 }
 
 QString Toolkit::getBreaks() const
 {
-    return QString::fromStdString(m_verovioToolkit.GetOption("spacingStaff"));
+    return QString::fromStdString(GetOption("spacingStaff"));
 }
 
 QString Toolkit::getTranspose() const
 {
-    return QString::fromStdString(m_verovioToolkit.GetOption("transpose"));
+    return QString::fromStdString(GetOption("transpose"));
 }
 
 QString Toolkit::getHeader() const
 {
-    return QString::fromStdString(m_verovioToolkit.GetOption("header"));
+    return QString::fromStdString(GetOption("header"));
 }
 
 QString Toolkit::getFooter() const
 {
-    return QString::fromStdString(m_verovioToolkit.GetOption("footer"));
+    return QString::fromStdString(GetOption("footer"));
 }
 
 bool Toolkit::addFont(QString fontFilePath)
@@ -345,7 +345,7 @@ bool Toolkit::initFont()
     if (m_fontInitDone) return true;
     m_fontInitDone = true;
 
-    m_verovioToolkit.SetOption("font", m_musicFontName.toStdString());
+    SetOption("font", m_musicFontName.toStdString());
 
     addFont(m_musicFontPath);
     addFont(m_verovioTextFontPath);
@@ -424,10 +424,8 @@ bool Toolkit::prepareLayout()
         return false;
     }
 
-    m_verovioToolkit.SetOption(
-        "pageWidth", std::to_string(static_cast<int>(m_displayWidth * 100.0 / m_verovioToolkit.GetScale())));
-    m_verovioToolkit.SetOption(
-        "pageHeight", std::to_string(static_cast<int>(m_displayHeight * 100.0 / m_verovioToolkit.GetScale())));
+    SetOption("pageWidth", std::to_string(static_cast<int>(m_displayWidth * 100.0 / m_verovioToolkit.GetScale())));
+    SetOption("pageHeight", std::to_string(static_cast<int>(m_displayHeight * 100.0 / m_verovioToolkit.GetScale())));
 
     return true;
 }
@@ -448,6 +446,22 @@ void Toolkit::documentRelayout()
 
     setPageCount(m_verovioToolkit.GetPageCount());
     emit documentLayoutChanged();
+}
+
+std::string Toolkit::GetOption(const std::string &option, bool defaultValue) const
+{
+    if (option == "pageHeight") {
+        return "2970";
+    }
+    else if (option == "pageWidth") {
+        return "2100";
+    }
+    return "";
+}
+
+bool Toolkit::SetOption(const std::string &option, const std::string &value)
+{
+    return true;
 }
 
 } // namespace vrvQt
