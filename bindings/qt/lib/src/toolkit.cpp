@@ -13,6 +13,8 @@
 #include <QDir>
 #include <QFile>
 #include <QFontDatabase>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QUrl>
 
 namespace vrvQt {
@@ -98,6 +100,8 @@ void Toolkit::setFileName(QString fileName)
 
 void Toolkit::setMusicFontName(QString musicFont)
 {
+    qWarning() << __FUNCTION__ << musicFont;
+    //qWarning() << __FUNCTION__ << "before:" << m_verovioToolkit.GetOptions().c_str();
     if (m_musicFontName != musicFont) {
         m_musicFontName = musicFont;
         m_fontInitDone = false;
@@ -448,19 +452,82 @@ void Toolkit::documentRelayout()
     emit documentLayoutChanged();
 }
 
+static QJsonObject GetOptionsAsQJsonObject(const std::string options)
+{
+    QByteArray ba(options.c_str());
+    QJsonDocument doc(QJsonDocument::fromJson(ba));
+    QJsonObject obj;
+    /*
+    qWarning() << __FUNCTION__ << "JSON doc"
+               << "isNull" << doc.isNull()
+               << "isEmpty" << doc.isEmpty()
+               << "isObject" << doc.isObject()
+               << "isArray" << doc.isArray();
+    */
+    if (!doc.isNull() && !doc.isEmpty() && doc.isObject()) {
+        obj = doc.object();
+        /*
+        if (const QJsonValue v = obj["pageHeight"]; v.isDouble()) {
+            qWarning() << __FUNCTION__ << "pageHeight" << v.toInt();
+        }
+        if (const QJsonValue v = obj["pageWidth"]; v.isDouble()) {
+            qWarning() << __FUNCTION__ << "pageWidth" << v.toInt();
+        }
+        */
+    }
+    else {
+        qWarning() << __FUNCTION__ << "no QJsonObject";
+    }
+
+    /* print doc formatted
+    qWarning() << __FUNCTION__ << "JSON doc begin";
+    qWarning() << doc.toJson().constData();
+    qWarning() << __FUNCTION__ << "JSON doc end";
+    */
+    return obj;
+}
+
 std::string Toolkit::GetOption(const std::string &option, bool defaultValue) const
 {
-    if (option == "pageHeight") {
-        return "2970";
+    qWarning() << __FUNCTION__ << option.c_str() << defaultValue;
+
+    if (defaultValue) {
+        qWarning() << "Warning:" << __FUNCTION__ << "not supported with defaultValue true";
+        return "[unspecified]";
     }
-    else if (option == "pageWidth") {
-        return "2100";
+
+    QJsonObject options = GetOptionsAsQJsonObject(m_verovioToolkit.GetOptions());
+    QString key = QString::fromStdString(option);
+
+    if (!options.contains(key)) {
+        qWarning() << __FUNCTION__ << "Unsupported option" << option.c_str();
+        return "[unspecified]";
     }
-    return "";
+
+    QJsonValue value = options.value(key);
+#if 0
+    qWarning() << __FUNCTION__ << "value.type" << value.type() << "isString" << value.isString() << value.toString();
+#endif
+    QString result = "[unspecified]";
+    if (value.isBool()) {
+        result = value.toBool() ? "true" : "false";
+    }
+    else if (value.isDouble()) {
+        result.setNum(value.toDouble());
+    }
+    else if (value.isString()) {
+        result = "\"" + value.toString() + "\"";
+    }
+#if 1
+    qWarning() << __FUNCTION__ << "result" << qPrintable(result);
+#endif
+
+    return result.toStdString();
 }
 
 bool Toolkit::SetOption(const std::string &option, const std::string &value)
 {
+    qWarning() << __FUNCTION__ << option.c_str() << value.c_str();
     return true;
 }
 
