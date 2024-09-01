@@ -101,7 +101,7 @@ void Toolkit::setFileName(QString fileName)
 void Toolkit::setMusicFontName(QString musicFont)
 {
     qWarning() << __FUNCTION__ << musicFont;
-    //qWarning() << __FUNCTION__ << "before:" << m_verovioToolkit.GetOptions().c_str();
+    qWarning() << __FUNCTION__ << "options before:" << m_verovioToolkit.GetOptions().c_str();
     if (m_musicFontName != musicFont) {
         m_musicFontName = musicFont;
         m_fontInitDone = false;
@@ -157,15 +157,25 @@ void Toolkit::setScale(int scale)
 void Toolkit::setAdjustPageHeight(bool adjustPageHeight)
 {
     if (getAdjustPageHeight() != adjustPageHeight) {
-        SetOption("adjustPageHeight", adjustPageHeight ? "true" : "false");
+        SetOption("adjustPageHeight", adjustPageHeight);
         requestDocumentRelayout();
     }
 }
 
 void Toolkit::setBreaks(QString breaks)
 {
+    qWarning() << __FUNCTION__ << breaks << '(' << breaks.size() << "chars )";
     if (getBreaks() != breaks) {
-        SetOption("breaks", breaks.toStdString());
+        //SetOption("breaks", breaks.toStdString());
+        SetOption("breaks", breaks);
+        //QString newOption("{ \"breaks\": \"%1\" }").arg(breaks);
+        /*
+        QString newOption("{ \"breaks\": \"");
+        newOption += breaks;
+        newOption += "\" }";
+        qWarning() << __FUNCTION__ << "newOption" << newOption;
+        m_verovioToolkit.SetOptions(newOption.toStdString());
+        */
         // "breaks" is used in LoadData
         requestReloadData();
     }
@@ -174,7 +184,7 @@ void Toolkit::setBreaks(QString breaks)
 void Toolkit::setHeader(QString header)
 {
     if (getHeader() != header) {
-        SetOption("header", header.toStdString());
+        SetOption("header", header);
         // "header" is used in LoadData
         requestReloadData();
     }
@@ -183,7 +193,7 @@ void Toolkit::setHeader(QString header)
 void Toolkit::setFooter(QString footer)
 {
     if (getFooter() != footer) {
-        SetOption("footer", footer.toStdString());
+        SetOption("footer", footer);
         // "footer" is used in LoadData
         requestReloadData();
     }
@@ -192,7 +202,7 @@ void Toolkit::setFooter(QString footer)
 void Toolkit::setTranspose(QString transpose)
 {
     if (getTranspose() != transpose) {
-        SetOption("transpose", transpose.toStdString());
+        SetOption("transpose", transpose);
         // "transpose" is used in LoadData
         requestReloadData();
     }
@@ -271,7 +281,7 @@ void Toolkit::setResourcesDataPath(QString resourcesDataPath)
 void Toolkit::setSpacingStaff(int spacingStaff)
 {
     if (getSpacingStaff() != spacingStaff) {
-        SetOption("spacingStaff", std::to_string(spacingStaff));
+        SetOption("spacingStaff", spacingStaff);
         requestDocumentRelayout();
     }
 }
@@ -279,7 +289,7 @@ void Toolkit::setSpacingStaff(int spacingStaff)
 void Toolkit::setSpacingSystem(int spacingSystem)
 {
     if (getSpacingSystem() != spacingSystem) {
-        SetOption("spacingSystem", std::to_string(spacingSystem));
+        SetOption("spacingSystem", spacingSystem);
         requestDocumentRelayout();
     }
 }
@@ -349,7 +359,7 @@ bool Toolkit::initFont()
     if (m_fontInitDone) return true;
     m_fontInitDone = true;
 
-    SetOption("font", m_musicFontName.toStdString());
+    SetOption("font", m_musicFontName);
 
     addFont(m_musicFontPath);
     addFont(m_verovioTextFontPath);
@@ -428,8 +438,8 @@ bool Toolkit::prepareLayout()
         return false;
     }
 
-    SetOption("pageWidth", std::to_string(static_cast<int>(m_displayWidth * 100.0 / m_verovioToolkit.GetScale())));
-    SetOption("pageHeight", std::to_string(static_cast<int>(m_displayHeight * 100.0 / m_verovioToolkit.GetScale())));
+    SetOption("pageWidth", static_cast<int>(m_displayWidth * 100.0 / m_verovioToolkit.GetScale()));
+    SetOption("pageHeight", static_cast<int>(m_displayHeight * 100.0 / m_verovioToolkit.GetScale()));
 
     return true;
 }
@@ -525,9 +535,25 @@ std::string Toolkit::GetOption(const std::string &option, bool defaultValue) con
     return result.toStdString();
 }
 
-bool Toolkit::SetOption(const std::string &option, const std::string &value)
+bool Toolkit::SetOption(const std::string &option, const QJsonValue &value)
 {
-    qWarning() << __FUNCTION__ << option.c_str() << value.c_str();
+    qWarning() << __FUNCTION__ << option.c_str() << "type" << value.type();
+    if (value.isBool()) {
+        qWarning() << __FUNCTION__ << option.c_str() << value.toBool();
+    } else if (value.isDouble()) {
+        qWarning() << __FUNCTION__ << option.c_str() << value.toDouble();
+    } else if (value.isString()) {
+        qWarning() << __FUNCTION__ << option.c_str() << value.toString();
+    }
+    QJsonObject object;
+    QString key(QString::fromStdString(option));
+    object[key] = value;
+    QJsonDocument doc(object);
+    QByteArray ba(doc.toJson(QJsonDocument::Compact));
+    QString json(ba);
+    qWarning() << __FUNCTION__ << json;
+    m_verovioToolkit.SetOptions(ba.toStdString());
+
     return true;
 }
 
